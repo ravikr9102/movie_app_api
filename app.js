@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 // CORS setup
 app.use(
   cors({
-    origin: ['https://movie-app-sigma.vercel.app', 'http://localhost:3000'],
+    origin: ['https://movie-app-sigma.vercel.app', 'http://localhost:5173'],
   })
 );
 
