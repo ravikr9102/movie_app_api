@@ -163,35 +163,52 @@ app.delete('/api/movies/favourite/:id', async (req, res) => {
 });
 
 // api for fetching a single movie by its ID
+// app.get('/api/movies/:id', async (req, res) => {
+//   const movieId = req.params.id;
+
+//   try {
+//     // Fetch movie details from OMDb API
+//     const url = `https://www.omdbapi.com/?i=${movieId}&apikey=7abae3ab`;
+//     request(url, async function (error, response, body) {
+//       if (!error && response.statusCode === 200) {
+//         const movieData = JSON.parse(body);
+
+//         // Check if the movie is marked as favorite
+//         const isFavorite = await favouriteMovie.exists({ movieId });
+
+//         // Attach the favorite status to the movie data
+//         const movieWithFavorite = {
+//           ...movieData,
+//           favourite: isFavorite ? true : false,
+//         };
+
+//         // Send the movie data back to the client
+//         res.send(movieWithFavorite);
+//       } else {
+//         res.status(500).send({ message: 'Error fetching movie data' });
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).send({ message: error.message });
+//   }
+// });
+
 app.get('/api/movies/:id', async (req, res) => {
-  const movieId = req.params.id;
+  const { id } = req.params;
+  const url = `https://www.omdbapi.com/?i=${id}&apikey=7abae3ab`;
 
-  try {
-    // Fetch movie details from OMDb API
-    const url = `https://www.omdbapi.com/?i=${movieId}&apikey=7abae3ab`;
-    request(url, async function (error, response, body) {
-      if (!error && response.statusCode === 200) {
-        const movieData = JSON.parse(body);
-
-        // Check if the movie is marked as favorite
-        const isFavorite = await favouriteMovie.exists({ movieId });
-
-        // Attach the favorite status to the movie data
-        const movieWithFavorite = {
-          ...movieData,
-          favourite: isFavorite ? true : false,
-        };
-
-        // Send the movie data back to the client
-        res.send(movieWithFavorite);
-      } else {
-        res.status(500).send({ message: 'Error fetching movie data' });
-      }
-    });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
+  request(url, async function (error, response, body) {
+    if (!error && response.statusCode === 200) {
+      const movie = JSON.parse(body);
+      const isFavorite = await favouriteMovie.exists({ movieId: id });
+      movie.favourite = isFavorite ? true : false;
+      res.send(movie);
+    } else {
+      res.status(500).send({ message: error || 'Failed to fetch movie' });
+    }
+  });
 });
+
 
 
 const port = 8000;
