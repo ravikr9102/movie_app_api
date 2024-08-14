@@ -162,6 +162,38 @@ app.delete('/api/movies/favourite/:id', async (req, res) => {
     });
 });
 
+// api for fetching a single movie by its ID
+app.get('/api/movies/:id', async (req, res) => {
+  const movieId = req.params.id;
+
+  try {
+    // Fetch movie details from OMDb API
+    const url = `https://www.omdbapi.com/?i=${movieId}&apikey=7abae3ab`;
+    request(url, async function (error, response, body) {
+      if (!error && response.statusCode === 200) {
+        const movieData = JSON.parse(body);
+
+        // Check if the movie is marked as favorite
+        const isFavorite = await favouriteMovie.exists({ movieId });
+
+        // Attach the favorite status to the movie data
+        const movieWithFavorite = {
+          ...movieData,
+          favourite: isFavorite ? true : false,
+        };
+
+        // Send the movie data back to the client
+        res.send(movieWithFavorite);
+      } else {
+        res.status(500).send({ message: 'Error fetching movie data' });
+      }
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+
 const port = 8000;
 app.listen(port, function () {
   console.log('backend listen on' + port);
