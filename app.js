@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 
 // api for homepage movies
 app.get('/movies', async (req, res) => {
-  var url = 'https://www.omdbapi.com/?s=fast&furious&apikey=7abae3ab';
+  var url = 'https://www.omdbapi.com/?s=The%20Lord%20of%20the%20Rings&apikey=7abae3ab';
   request(url, async function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var data = JSON.parse(body);
